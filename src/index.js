@@ -33,6 +33,12 @@ app.post("/users", (request, response) => {
     return response.status(400).json("Name or username not found!");
   }
 
+  const userAlreadyExists = users.find((user) => user.username == username);
+
+  if (userAlreadyExists) {
+    return response.status(400).json({ error: "User Already Exists" });
+  }
+
   const user = {
     id: uuidv4(),
     name,
@@ -69,7 +75,7 @@ app.post("/todos", checksExistsUserAccount, (request, response) => {
 
   username.todos.push(todo);
 
-  return response.json(todo);
+  return response.status(201).json(todo);
 });
 
 app.put("/todos/:id", checksExistsUserAccount, (request, response) => {
@@ -96,7 +102,7 @@ app.put("/todos/:id", checksExistsUserAccount, (request, response) => {
   username.todos[todoIndex].title = title;
   username.todos[todoIndex].deadline = new Date(deadline);
 
-  return response.status(201).send();
+  return response.status(201).json(todo);
 });
 
 app.patch("/todos/:id/done", checksExistsUserAccount, (request, response) => {
@@ -117,7 +123,7 @@ app.patch("/todos/:id/done", checksExistsUserAccount, (request, response) => {
 
   username.todos[todoIndex].done = true;
 
-  return response.status(204).send();
+  return response.status(200).json(todo);
 });
 
 app.delete("/todos/:id", checksExistsUserAccount, (request, response) => {
